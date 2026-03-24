@@ -1,0 +1,32 @@
+﻿{
+  "applications": {
+    "HQSOFT.Order.Blazor": {
+      "type": "dotnet-project",
+      "launchUrl": "https://localhost:44398",
+      "path": "../../../src/HQSOFT.Order.Blazor/HQSOFT.Order.Blazor.csproj",
+      "kubernetesService": ".*-blazorserver$",
+      "healthCheckEndpoint": "/health-status",
+      "healthUiEndpoint": "/health-ui",
+      "execution": {
+        "order": 2
+      }
+}
+  },
+  "containers": {
+    "serviceName": "Order-Containers",
+  },
+  "tasks":{
+    "Initialize Solution":{
+    "type": "cli",
+    "runOnSolutionOpen": true,
+    "startCommand": "etc/scripts/initialize-solution.ps1",
+    "workingDirectory": "../../../"
+    },
+    "Migrate Database":{
+    "type": "cli",
+    "runOnSolutionOpen": false,
+    "startCommand": "etc/scripts/migrate-database.ps1",
+    "workingDirectory": "../../../"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.LeptonXLiteTheme": {
+      "version": "4.3.5",
+      "isInstalled": true
+    },
+    "Volo.Abp.Account": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "03/24/2026 21:53:08 +00:00"
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "03/24/2026 21:53:08 +00:00"
+    },
+    "Volo.Abp.Identity": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "03/24/2026 21:53:08 +00:00"
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "03/24/2026 21:53:08 +00:00"
+    },
+    "Volo.Abp.SettingManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "03/24/2026 21:53:08 +00:00"
+    },
+    "Volo.Abp.PermissionManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "03/24/2026 21:53:08 +00:00"
+    },
+    "Volo.Abp.FeatureManagement": {
+      "version": "9.3.5",
+      "isInstalled": true,
+      "creationTime": "03/24/2026 21:53:08 +00:00"
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "HQSOFT.Order.Application": {
+      "path": "src/HQSOFT.Order.Application/HQSOFT.Order.Application.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Order.Application.Tests": {
+      "path": "test/HQSOFT.Order.Application.Tests/HQSOFT.Order.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "HQSOFT.Order.Domain.Shared": {
+      "path": "src/HQSOFT.Order.Domain.Shared/HQSOFT.Order.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Order.Application.Contracts": {
+      "path": "src/HQSOFT.Order.Application.Contracts/HQSOFT.Order.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Order.HttpApi": {
+      "path": "src/HQSOFT.Order.HttpApi/HQSOFT.Order.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Order.HttpApi.Client": {
+      "path": "src/HQSOFT.Order.HttpApi.Client/HQSOFT.Order.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Order.EntityFrameworkCore.Tests": {
+      "path": "test/HQSOFT.Order.EntityFrameworkCore.Tests/HQSOFT.Order.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "HQSOFT.Order.EntityFrameworkCore": {
+      "path": "src/HQSOFT.Order.EntityFrameworkCore/HQSOFT.Order.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Order.TestBase": {
+      "path": "test/HQSOFT.Order.TestBase/HQSOFT.Order.TestBase.abppkg",
+      "folder": "test"
+    },
+    "HQSOFT.Order.Domain.Tests": {
+      "path": "test/HQSOFT.Order.Domain.Tests/HQSOFT.Order.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "HQSOFT.Order.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/HQSOFT.Order.HttpApi.Client.ConsoleTestApp/HQSOFT.Order.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "HQSOFT.Order.DbMigrator": {
+      "path": "src/HQSOFT.Order.DbMigrator/HQSOFT.Order.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Order.Blazor": {
+      "path": "src/HQSOFT.Order.Blazor/HQSOFT.Order.Blazor.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Order.Domain": {
+      "path": "src/HQSOFT.Order.Domain/HQSOFT.Order.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}
