@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres-order:
+    image: postgres:15
+    container_name: postgres-order
+    restart: always
+    environment:
+      POSTGRES_DB: Order
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 1q2w3E
+    ports:
+      - "5433:5432"
+    volumes:
+      - order_data:/var/lib/postgresql/data
+
+  postgres-inventory:
+    image: postgres:15
+    container_name: postgres-inventory
+    restart: always
+    environment:
+      POSTGRES_DB: Inventory
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 1q2w3E
+    ports:
+      - "5434:5432"
+    volumes:
+      - inventory_data:/var/lib/postgresql/data
+
+volumes:
+  order_data:
+  inventory_data:
