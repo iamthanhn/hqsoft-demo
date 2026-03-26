@@ -8,6 +8,5 @@ public class InventoryApplicationAutoMapperProfile : Profile
     public InventoryApplicationAutoMapperProfile()
     {
         CreateMap<InventoryItem, InventoryItemDto>();
-        CreateMap<CreateUpdateInventoryItemDto, InventoryItem>();
     }
 }

@@ -4,7 +4,7 @@
   "modules": {
     "HQSOFT.Inventory": {
       "path": "HQSOFT.Inventory/HQSOFT.Inventory.abpmdl"
-    }
+    },
        "HQSOFT.Order": {
       "path": "HQSOFT.Order/HQSOFT.Order.abpmdl"
     }
