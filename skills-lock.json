@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "skills": {
+    "abp-api-implementation": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "3c50a5eab3fb98000f2e18cdd2ff0b7cdaaf8b112232b909166f48d5d07e86f7"
+    },
+    "abp-contract-scaffolding": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "0027a45a2dc987c4e7d16dd5e38a47e8587f88ba640deaa7d9eba69769205d9b"
+    },
+    "abp-entity-patterns": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "a317f19a65445a0ea918774364e8d5bd0c3f29ec34624cf9c1530a7d852e8ed8"
+    },
+    "abp-framework-patterns": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "8ee01be300920e16f19b76cf16306c33065acb0cb59d0d5ea75f2c63cd02aa6a"
+    },
+    "abp-infrastructure-patterns": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "ecf975b7ebd7ab7c326012558dcc35cf0d737e2d9d332a31637727ad21f2919c"
+    },
+    "abp-integration-testing": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "5fc39aac0c3ac76b26b7d1f8631c4c070d8589c3abc0a5d2d329d4fe37aa1aa3"
+    },
+    "abp-service-patterns": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "0e11502f1439eb11d878fb9e37cd67864ec9293ff3fb51fc95bd457cf6c38413"
+    },
+    "actionable-review-format-standards": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "5f2be5b8dd933642a077895b69a6e4f009108c517e989497deb3000d0d181105"
+    },
+    "api-design-principles": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "5ae72a06e86ee41a599e215db35d233f58894bd57b8d169fe3cab78a3c7a5af8"
+    },
+    "api-integration-testing": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "287fab8fa7803a9a55492444b8483dc151ab3bbd28a8e6f90090248acb12423f"
+    },
+    "api-response-patterns": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "1e1b3c71d4dd26971177af283f42a3fa71e02b28060e3f558170eb8d35dc8ee2"
+    },
+    "api-spec-to-service": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "0d2d68980f39d185ca69df2727a08211ab9286f0be4dd4f55218abb571a1a6d2"
+    },
+    "authentication-authorization-patterns": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "9adb8e3a434e71c3026b00485b33b12aaa75d408fecd673eea0ece8fb1225ea3"
+    },
+    "brainstorming": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "f483c304fcde060211ffae00f49bb728536e7e7613c99db45b5b924d9fc17243"
+    },
+    "clean-code-dotnet": {
+      "source": "thapaliyabikendra/ai-artifacts",
+      "sourceType": "github",
+      "computedHash": "c0c46aa7b21719992cf89c03d71875bed2262d2c8686fcabf69b0300de6eb78c"
+    },
+    "executing-plans": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "2f709d1a2c7564f8ce6a9bb707e7f5451117ba80f8e8e2302662c29bc61246a6"
+    },
+    "subagent-driven-development": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "a197f8e5fba5ea59013e1adbaa90dd42db35de8f074feca200c8038de584a83b"
+    },
+    "using-superpowers": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "af9db85109491dbe11f36b13724835f0f03583a5e026bf496b3b257e27a3f753"
+    },
+    "writing-plans": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "bfaed11054ad8021c66860244e2d2e0d1eca483ae9f5fbfcb956e99c61f5c3d7"
+    }
+  }
+}
