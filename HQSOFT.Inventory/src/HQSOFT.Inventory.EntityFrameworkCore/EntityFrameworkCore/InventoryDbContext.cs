@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HQSOFT.Inventory.InventoryItems;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -7,9 +8,7 @@ namespace HQSOFT.Inventory.EntityFrameworkCore;
 [ConnectionStringName(InventoryDbProperties.ConnectionStringName)]
 public class InventoryDbContext : AbpDbContext<InventoryDbContext>, IInventoryDbContext
 {
-    /* Add DbSet for each Aggregate Root here. Example:
-     * public DbSet<Question> Questions { get; set; }
-     */
+    public DbSet<InventoryItem> InventoryItems { get; set; } = null!;
 
     public InventoryDbContext(DbContextOptions<InventoryDbContext> options)
         : base(options)

@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HQSOFT.Inventory.InventoryItems;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace HQSOFT.Inventory.EntityFrameworkCore;
 
@@ -10,24 +12,18 @@ public static class InventoryDbContextModelCreatingExtensions
     {
         Check.NotNull(builder, nameof(builder));
 
-        /* Configure all entities here. Example:
-
-        builder.Entity<Question>(b =>
+        builder.Entity<InventoryItem>(b =>
         {
-            //Configure table & schema name
-            b.ToTable(InventoryDbProperties.DbTablePrefix + "Questions", InventoryDbProperties.DbSchema);
-
+            b.ToTable(InventoryDbProperties.DbTablePrefix + "InventoryItems", InventoryDbProperties.DbSchema);
             b.ConfigureByConvention();
 
-            //Properties
-            b.Property(q => q.Title).IsRequired().HasMaxLength(QuestionConsts.MaxTitleLength);
+            b.Property(x => x.ProductId).IsRequired();
+            b.Property(x => x.ProductCode).IsRequired().HasMaxLength(50);
+            b.Property(x => x.ProductName).IsRequired().HasMaxLength(200);
+            b.Property(x => x.Quantity).IsRequired();
+            b.Property(x => x.ReservedQuantity).IsRequired();
 
-            //Relations
-            b.HasMany(question => question.Tags).WithOne().HasForeignKey(qt => qt.QuestionId);
-
-            //Indexes
-            b.HasIndex(q => q.CreationTime);
+            b.HasIndex(x => x.ProductId);
         });
-        */
     }
 }

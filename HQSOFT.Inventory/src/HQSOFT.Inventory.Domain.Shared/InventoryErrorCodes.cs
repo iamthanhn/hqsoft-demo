@@ -2,5 +2,5 @@
 
 public static class InventoryErrorCodes
 {
-    //Add your business exception error codes here...
+    public const string InsufficientStock = "Inventory:InsufficientStock";
 }
