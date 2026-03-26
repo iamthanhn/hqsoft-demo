@@ -52,6 +52,7 @@ using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.Studio.Client.AspNetCore;
+using HQSOFT.Inventory.EntityFrameworkCore;
 
 namespace HQSOFT.Order.Blazor;
 
@@ -71,6 +72,8 @@ namespace HQSOFT.Order.Blazor;
     typeof(AbpFeatureManagementBlazorServerModule),
     typeof(AbpSettingManagementBlazorServerModule)
    )]
+
+[DependsOn(typeof(InventoryEntityFrameworkCoreModule))]
 public class OrderBlazorModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)

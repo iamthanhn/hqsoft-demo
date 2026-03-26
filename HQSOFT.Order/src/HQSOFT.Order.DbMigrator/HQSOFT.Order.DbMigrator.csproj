@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Volo.Abp.Autofac" Version="9.3.5" />
+    <ProjectReference Include="..\..\..\HQSOFT.Inventory\src\HQSOFT.Inventory.EntityFrameworkCore\HQSOFT.Inventory.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\HQSOFT.Order.EntityFrameworkCore\HQSOFT.Order.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\HQSOFT.Order.Application.Contracts\HQSOFT.Order.Application.Contracts.csproj" />
   </ItemGroup>

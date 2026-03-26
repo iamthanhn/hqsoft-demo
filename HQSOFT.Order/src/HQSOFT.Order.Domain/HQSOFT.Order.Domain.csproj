@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\HQSOFT.Inventory\src\HQSOFT.Inventory.Domain\HQSOFT.Inventory.Domain.csproj" />
     <ProjectReference Include="..\HQSOFT.Order.Domain.Shared\HQSOFT.Order.Domain.Shared.csproj" />
   </ItemGroup>
 

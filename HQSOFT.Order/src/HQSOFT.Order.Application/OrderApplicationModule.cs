@@ -6,6 +6,7 @@ using Volo.Abp.AutoMapper;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Modularity;
 using Volo.Abp.TenantManagement;
+using HQSOFT.Inventory;
 
 namespace HQSOFT.Order;
 
@@ -19,6 +20,8 @@ namespace HQSOFT.Order;
     typeof(AbpTenantManagementApplicationModule),
     typeof(AbpSettingManagementApplicationModule)
     )]
+
+[DependsOn(typeof(InventoryApplicationModule))]
 public class OrderApplicationModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

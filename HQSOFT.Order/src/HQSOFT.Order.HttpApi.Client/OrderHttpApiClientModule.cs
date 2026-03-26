@@ -7,6 +7,7 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.TenantManagement;
+using HQSOFT.Inventory;
 
 namespace HQSOFT.Order;
 
@@ -19,6 +20,8 @@ namespace HQSOFT.Order;
     typeof(AbpTenantManagementHttpApiClientModule),
     typeof(AbpSettingManagementHttpApiClientModule)
 )]
+
+[DependsOn(typeof(InventoryHttpApiClientModule))]
 public class OrderHttpApiClientModule : AbpModule
 {
     public const string RemoteServiceName = "Default";

@@ -8,6 +8,7 @@ using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement.HttpApi;
 using Volo.Abp.Localization;
 using Volo.Abp.TenantManagement;
+using HQSOFT.Inventory;
 
 namespace HQSOFT.Order;
 
@@ -20,6 +21,8 @@ namespace HQSOFT.Order;
     typeof(AbpTenantManagementHttpApiModule),
     typeof(AbpFeatureManagementHttpApiModule)
     )]
+
+[DependsOn(typeof(InventoryHttpApiModule))]
 public class OrderHttpApiModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

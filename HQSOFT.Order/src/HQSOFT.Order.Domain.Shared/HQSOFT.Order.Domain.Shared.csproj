@@ -34,4 +34,8 @@
     <Content Remove="Localization\Order\*.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\HQSOFT.Inventory\src\HQSOFT.Inventory.Domain.Shared\HQSOFT.Inventory.Domain.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

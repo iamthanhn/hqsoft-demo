@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\HQSOFT.Inventory\src\HQSOFT.Inventory.EntityFrameworkCore\HQSOFT.Inventory.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\HQSOFT.Order.Application\HQSOFT.Order.Application.csproj" />
     <ProjectReference Include="..\HQSOFT.Order.HttpApi\HQSOFT.Order.HttpApi.csproj" />
     <ProjectReference Include="..\HQSOFT.Order.EntityFrameworkCore\HQSOFT.Order.EntityFrameworkCore.csproj" />

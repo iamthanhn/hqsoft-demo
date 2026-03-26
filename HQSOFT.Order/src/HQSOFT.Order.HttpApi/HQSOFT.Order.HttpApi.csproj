@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\HQSOFT.Inventory\src\HQSOFT.Inventory.HttpApi\HQSOFT.Inventory.HttpApi.csproj" />
     <ProjectReference Include="..\HQSOFT.Order.Application.Contracts\HQSOFT.Order.Application.Contracts.csproj" />
   </ItemGroup>
 

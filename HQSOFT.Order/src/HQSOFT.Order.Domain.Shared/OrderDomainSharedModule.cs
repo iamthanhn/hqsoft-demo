@@ -13,6 +13,7 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.BlobStoring.Database;
 using Volo.Abp.TenantManagement;
+using HQSOFT.Inventory;
 
 namespace HQSOFT.Order;
 
@@ -27,6 +28,8 @@ namespace HQSOFT.Order;
     typeof(AbpTenantManagementDomainSharedModule),
     typeof(BlobStoringDatabaseDomainSharedModule)
     )]
+
+[DependsOn(typeof(InventoryDomainSharedModule))]
 public class OrderDomainSharedModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)

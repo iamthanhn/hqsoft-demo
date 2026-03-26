@@ -17,6 +17,7 @@ using Volo.Abp.Emailing;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.TenantManagement;
+using HQSOFT.Inventory;
 
 namespace HQSOFT.Order;
 
@@ -35,6 +36,8 @@ namespace HQSOFT.Order;
     typeof(AbpTenantManagementDomainModule),
     typeof(BlobStoringDatabaseDomainModule)
     )]
+
+[DependsOn(typeof(InventoryDomainModule))]
 public class OrderDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
