@@ -1,0 +1,12 @@
+{
+  "id": "b4a2ddf7-e808-4545-8113-943f005c7353",
+  "template": "empty",
+  "modules": {
+    "HQSOFT.Inventory": {
+      "path": "HQSOFT.Inventory/HQSOFT.Inventory.abpmdl"
+    }
+       "HQSOFT.Order": {
+      "path": "HQSOFT.Order/HQSOFT.Order.abpmdl"
+    }
+  }
+}

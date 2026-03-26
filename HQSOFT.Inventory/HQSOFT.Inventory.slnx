@@ -1,0 +1,23 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU" />
+    </Configurations>
+
+    <Folder Name="/src/">
+        <Project Path="src/HQSOFT.Inventory.Domain.Shared/HQSOFT.Inventory.Domain.Shared.csproj" />
+        <Project Path="src/HQSOFT.Inventory.Domain/HQSOFT.Inventory.Domain.csproj" />
+        <Project Path="src/HQSOFT.Inventory.Application.Contracts/HQSOFT.Inventory.Application.Contracts.csproj" />
+        <Project Path="src/HQSOFT.Inventory.Application/HQSOFT.Inventory.Application.csproj" />
+        <Project Path="src/HQSOFT.Inventory.EntityFrameworkCore/HQSOFT.Inventory.EntityFrameworkCore.csproj" />
+        <Project Path="src/HQSOFT.Inventory.HttpApi/HQSOFT.Inventory.HttpApi.csproj" />
+        <Project Path="src/HQSOFT.Inventory.HttpApi.Client/HQSOFT.Inventory.HttpApi.Client.csproj" />
+        <Project Path="src/HQSOFT.Inventory.Installer/HQSOFT.Inventory.Installer.csproj" />
+    </Folder>
+    
+    <Folder Name="/test/">
+        <Project Path="test/HQSOFT.Inventory.TestBase/HQSOFT.Inventory.TestBase.csproj" />
+        <Project Path="test/HQSOFT.Inventory.EntityFrameworkCore.Tests/HQSOFT.Inventory.EntityFrameworkCore.Tests.csproj" />
+        <Project Path="test/HQSOFT.Inventory.Domain.Tests/HQSOFT.Inventory.Domain.Tests.csproj" />
+        <Project Path="test/HQSOFT.Inventory.Application.Tests/HQSOFT.Inventory.Application.Tests.csproj" />
+    </Folder>
+</Solution>

@@ -1,0 +1,58 @@
+{
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "HQSOFT.Inventory.Domain": {
+      "path": "src/HQSOFT.Inventory.Domain/HQSOFT.Inventory.Domain.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Inventory.Application.Contracts": {
+      "path": "src/HQSOFT.Inventory.Application.Contracts/HQSOFT.Inventory.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Inventory.Application": {
+      "path": "src/HQSOFT.Inventory.Application/HQSOFT.Inventory.Application.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Inventory.EntityFrameworkCore": {
+      "path": "src/HQSOFT.Inventory.EntityFrameworkCore/HQSOFT.Inventory.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Inventory.HttpApi": {
+      "path": "src/HQSOFT.Inventory.HttpApi/HQSOFT.Inventory.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Inventory.HttpApi.Client": {
+      "path": "src/HQSOFT.Inventory.HttpApi.Client/HQSOFT.Inventory.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Inventory.TestBase": {
+      "path": "test/HQSOFT.Inventory.TestBase/HQSOFT.Inventory.TestBase.abppkg",
+      "folder": "test"
+    },
+    "HQSOFT.Inventory.EntityFrameworkCore.Tests": {
+      "path": "test/HQSOFT.Inventory.EntityFrameworkCore.Tests/HQSOFT.Inventory.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "HQSOFT.Inventory.Domain.Tests": {
+      "path": "test/HQSOFT.Inventory.Domain.Tests/HQSOFT.Inventory.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "HQSOFT.Inventory.Application.Tests": {
+      "path": "test/HQSOFT.Inventory.Application.Tests/HQSOFT.Inventory.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "HQSOFT.Inventory.Domain.Shared": {
+      "path": "src/HQSOFT.Inventory.Domain.Shared/HQSOFT.Inventory.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "HQSOFT.Inventory.Installer": {
+       "path": "src/HQSOFT.Inventory.Installer/HQSOFT.Inventory.Installer.abppkg",
+       "folder": "src"
+    }
+  }
+}

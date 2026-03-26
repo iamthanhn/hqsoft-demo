@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>HQSOFT.Inventory</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Mapperly" Version="10.1.1" />
+    <PackageReference Include="Volo.Abp.Ddd.Application" Version="10.1.1" />
+    <ProjectReference Include="..\HQSOFT.Inventory.Application.Contracts\HQSOFT.Inventory.Application.Contracts.csproj" />
+    <ProjectReference Include="..\HQSOFT.Inventory.Domain\HQSOFT.Inventory.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
