@@ -19,8 +19,7 @@ public class SalesOrderManager : DomainService
     public async Task<SalesOrder> CreateAsync(DateTime orderDate)
     {
         var orderNumber = await GenerateUniqueOrderNumberAsync();
-        var order = new SalesOrder(GuidGenerator.Create(), orderNumber, orderDate, ESaleOrderStatus.Draft);
-        return await _salesOrderRepository.InsertAsync(order);
+        return new SalesOrder(GuidGenerator.Create(), orderNumber, orderDate, ESaleOrderStatus.Draft);
     }
 
     public async Task<SalesOrderLine> AddLineAsync(
@@ -77,7 +76,7 @@ public class SalesOrderManager : DomainService
         var prefix = "SO";
         var dateStr = DateTime.UtcNow.ToString("yyyyMMdd");
         string orderNumber;
-        int counter = 1;
+        var counter = 1;
 
         do
         {

@@ -5,6 +5,14 @@
     "Menu:Home": "Trang chủ",
     "LongWelcomeMessage": "Chào mừng bạn đến với ứng dụng. Đây là dự án khởi động dựa trên nền tảng ABP. Để biết thêm thông tin, hãy truy cập",
     "Welcome": "Chào mừng",
-    "UserDepartmentDisplayName": "Phòng ban"
+    "UserDepartmentDisplayName": "Phòng ban",
+    "Permission:SalesOrders": "Đơn bán hàng",
+    "Permission:SalesOrders.Create": "Tạo đơn bán hàng",
+    "Permission:SalesOrders.Confirm": "Xác nhận đơn bán hàng",
+    "Permission:SalesOrders.Cancel": "Hủy đơn bán hàng",
+    "SalesOrders:InsufficientStock": "Không đủ tồn kho cho sản phẩm {0}.",
+    "SalesOrders:ReserveStockFailed": "Không thể giữ tồn kho cho sản phẩm {0}.",
+    "Order:SalesOrders:InsufficientStock": "Không đủ tồn kho cho sản phẩm {0}.",
+    "Order:SalesOrders:ReserveStockFailed": "Không thể giữ tồn kho cho sản phẩm {0}."
   }
 }

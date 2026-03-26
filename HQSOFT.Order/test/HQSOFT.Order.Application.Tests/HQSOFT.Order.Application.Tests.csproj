@@ -10,10 +10,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\HQSOFT.Order.Application\HQSOFT.Order.Application.csproj" />
+    <ProjectReference Include="..\..\src\HQSOFT.Order.EntityFrameworkCore\HQSOFT.Order.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\HQSOFT.Order.Domain.Tests\HQSOFT.Order.Domain.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="9.3.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
   </ItemGroup>
 

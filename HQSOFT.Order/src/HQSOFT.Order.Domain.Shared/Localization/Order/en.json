@@ -4,7 +4,15 @@
     "AppName": "Order",
     "Menu:Home": "Home",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
-    "Welcome": "Welcome" ,
-    "UserDepartmentDisplayName" : "Department"
+    "Welcome": "Welcome",
+    "UserDepartmentDisplayName": "Department",
+    "Permission:SalesOrders": "Sales orders",
+    "Permission:SalesOrders.Create": "Create sales order",
+    "Permission:SalesOrders.Confirm": "Confirm sales order",
+    "Permission:SalesOrders.Cancel": "Cancel sales order",
+    "SalesOrders:InsufficientStock": "Insufficient stock for product {0}.",
+    "SalesOrders:ReserveStockFailed": "Failed to reserve stock for product {0}.",
+    "Order:SalesOrders:InsufficientStock": "Insufficient stock for product {0}.",
+    "Order:SalesOrders:ReserveStockFailed": "Failed to reserve stock for product {0}."
   }
 }

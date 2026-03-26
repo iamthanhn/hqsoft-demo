@@ -8,4 +8,5 @@ public interface ISalesOrderRepository : IRepository<SalesOrder, Guid>
 {
     Task<string> GetNextOrderNumberAsync();
     Task<bool> ExistsOrderNumberAsync(string orderNumber);
+    Task<SalesOrder?> FindWithLinesAsync(Guid id);
 }

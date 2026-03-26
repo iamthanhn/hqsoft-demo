@@ -16,6 +16,14 @@ public class SalesOrderRepository : EfCoreRepository<OrderDbContext, SalesOrder,
     {
     }
 
+    public async Task<SalesOrder?> FindWithLinesAsync(Guid id)
+    {
+        var dbSet = await GetDbSetAsync();
+        return await dbSet
+            .Include(x => x.OrderLines)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<string> GetNextOrderNumberAsync()
     {
         var dbSet = await GetDbSetAsync();

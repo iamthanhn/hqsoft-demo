@@ -2,5 +2,6 @@
 
 public static class OrderDomainErrorCodes
 {
-    /* You can add your business exception error codes here, as constants */
+    public const string InsufficientStock = "Order:SalesOrders:InsufficientStock";
+    public const string ReserveStockFailed = "Order:SalesOrders:ReserveStockFailed";
 }
