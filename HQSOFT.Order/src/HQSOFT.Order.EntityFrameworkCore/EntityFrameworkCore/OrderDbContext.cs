@@ -1,3 +1,5 @@
+using HQSOFT.Order.EntityFrameworkCore.Configurations;
+using HQSOFT.Order.SaleOrders;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -27,6 +29,8 @@ public class OrderDbContext :
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
+    public DbSet<SalesOrder> SalesOrders { get; set; }
+    public DbSet<SalesOrderLine> SalesOrderLines { get; set; }
 
     #region Entities from the modules
 
@@ -78,14 +82,9 @@ public class OrderDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
-        
-        /* Configure your own tables/entities inside here */
 
-        //builder.Entity<YourEntity>(b =>
-        //{
-        //    b.ToTable(OrderConsts.DbTablePrefix + "YourEntities", OrderConsts.DbSchema);
-        //    b.ConfigureByConvention(); //auto configure for the base class props
-        //    //...
-        //});
+        /* Configure your own tables/entities inside here */
+        builder.ApplyConfiguration(new SalesOrderConfiguration());
+        builder.ApplyConfiguration(new SalesOrderLineConfiguration());
     }
 }
