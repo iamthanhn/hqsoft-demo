@@ -1,0 +1,10 @@
+{
+  "Culture": "vi",
+  "Texts": {
+    "AppName": "Đơn hàng",
+    "Menu:Home": "Trang chủ",
+    "LongWelcomeMessage": "Chào mừng bạn đến với ứng dụng. Đây là dự án khởi động dựa trên nền tảng ABP. Để biết thêm thông tin, hãy truy cập",
+    "Welcome": "Chào mừng",
+    "UserDepartmentDisplayName": "Phòng ban"
+  }
+}
