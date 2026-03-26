@@ -16,11 +16,6 @@ namespace HQSOFT.Inventory.EntityFrameworkCore;
 )]
 public class InventoryEntityFrameworkCoreTestModule : AbpModule
 {
-    public override void PreConfigureServices(ServiceConfigurationContext context)
-    {
-        PreConfigure<AbpSqliteOptions>(x => x.BusyTimeout = null);
-    }
-    
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddAlwaysDisableUnitOfWorkTransaction();

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using HQSOFT.Inventory.InventoryItems;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -53,18 +54,10 @@ public class InventoryItemAppService : CrudAppService<
 
         var items = await AsyncExecuter.ToListAsync(query);
 
-        var dtos = items.Select(item => new InventoryItemDto
-        {
-            Id = item.Id,
-            ProductId = item.ProductId,
-            ProductCode = item.ProductCode,
-            ProductName = item.ProductName,
-            Quantity = item.Quantity,
-            ReservedQuantity = item.ReservedQuantity,
-            AvailableQuantity = item.AvailableQuantity
-        }).ToList();
-
-        return new PagedResultDto<InventoryItemDto>(totalCount, dtos);
+        return new PagedResultDto<InventoryItemDto>(
+            totalCount,
+            ObjectMapper.Map<List<InventoryItem>, List<InventoryItemDto>>(items)
+        );
     }
 
     protected override InventoryItem MapToEntity(CreateUpdateInventoryItemDto createInput)
@@ -81,27 +74,7 @@ public class InventoryItemAppService : CrudAppService<
 
     protected override void MapToEntity(CreateUpdateInventoryItemDto updateInput, InventoryItem entity)
     {
-        // ABP's FullAuditedAggregateRoot doesn't allow direct property updates
-        // For update, we need to create methods in the entity or use a different approach
+        // Entity uses private setters, so we need to use domain methods
         // For now, this is a placeholder - you may need to add Update methods to InventoryItem entity
-    }
-
-    protected override InventoryItemDto MapToGetOutputDto(InventoryItem entity)
-    {
-        return new InventoryItemDto
-        {
-            Id = entity.Id,
-            ProductId = entity.ProductId,
-            ProductCode = entity.ProductCode,
-            ProductName = entity.ProductName,
-            Quantity = entity.Quantity,
-            ReservedQuantity = entity.ReservedQuantity,
-            AvailableQuantity = entity.AvailableQuantity
-        };
-    }
-
-    protected override InventoryItemDto MapToGetListOutputDto(InventoryItem entity)
-    {
-        return MapToGetOutputDto(entity);
     }
 }

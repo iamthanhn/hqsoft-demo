@@ -3,13 +3,13 @@
   <Import Project="..\..\common.props" />
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RootNamespace>HQSOFT.Inventory</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="10.1.1"/>
+    <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="9.3.5"/>
     <ProjectReference Include="..\HQSOFT.Inventory.Application.Contracts\HQSOFT.Inventory.Application.Contracts.csproj" />
   </ItemGroup>
 

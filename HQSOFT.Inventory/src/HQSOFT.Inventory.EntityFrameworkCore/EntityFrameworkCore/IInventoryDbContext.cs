@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HQSOFT.Inventory.InventoryItems;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
-using HQSOFT.Inventory.InventoryItems;
 
 namespace HQSOFT.Inventory.EntityFrameworkCore;
 
