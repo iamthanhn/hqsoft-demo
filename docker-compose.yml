@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # ── Database ──────────────────────────────────────────────
   postgres-order:
     image: postgres:15
     container_name: postgres-order
@@ -13,6 +14,11 @@ services:
       - "5433:5432"
     volumes:
       - order_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d Order"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres-inventory:
     image: postgres:15
@@ -26,6 +32,46 @@ services:
       - "5434:5432"
     volumes:
       - inventory_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d Inventory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Application ────────────────────────────────────────────
+  hqsoft-order-blazor:
+    build:
+      context: ./HQSOFT.Order/src/HQSOFT.Order.Blazor
+      dockerfile: Dockerfile
+    container_name: hqsoft-order-blazor
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      - App__SelfUrl=http://hqsoft-order-blazor:80
+      - ConnectionStrings__Default=Server=postgres-order;Port=5432;Database=Order;User Id=root;Password=1q2w3E
+    depends_on:
+      postgres-order:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  hqsoft-order-db-migrator:
+    build:
+      context: ./HQSOFT.Order/src/HQSOFT.Order.DbMigrator
+      dockerfile: Dockerfile
+    container_name: hqsoft-order-db-migrator
+    restart: "no"
+    environment:
+      - ConnectionStrings__Default=Server=postgres-order;Port=5432;Database=Order;User Id=root;Password=1q2w3E
+    depends_on:
+      postgres-order:
+        condition: service_healthy
+    entrypoint: ["dotnet", "HQSOFT.Order.DbMigrator.dll"]
 
 volumes:
   order_data:
