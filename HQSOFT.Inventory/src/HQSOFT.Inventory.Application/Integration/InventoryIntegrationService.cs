@@ -56,4 +56,19 @@ public class InventoryIntegrationService : InventoryAppService, IInventoryIntegr
 
         return true;
     }
+
+    public async Task<bool> ReleaseStockAsync(Guid productId, int quantity, string reservationId)
+    {
+        var item = await _repository.FindByProductIdAsync(productId);
+
+        if (item == null)
+        {
+            return false;
+        }
+
+        item.Release(quantity, reservationId);
+        await _repository.UpdateAsync(item, autoSave: true);
+
+        return true;
+    }
 }

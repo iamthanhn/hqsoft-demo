@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using HQSOFT.Order.Localization;
 using HQSOFT.Order.Permissions;
 using HQSOFT.Order.MultiTenancy;
@@ -35,6 +35,18 @@ public class OrderMenuContributor : IMenuContributor
             )
         );
 
+        context.Menu.Items.Insert(
+            1,
+            new ApplicationMenuItem(
+                OrderMenus.SalesOrders,
+                l["Menu:SalesOrders"],
+                "/sales-orders",
+                icon: "fas fa-shopping-cart",
+                order: 2,
+                requiredPermissionName: OrderPermissions.SalesOrders.Default
+            )
+        );
+
         //Administration
         var administration = context.Menu.GetAdministration();
         administration.Order = 6;
@@ -42,10 +54,6 @@ public class OrderMenuContributor : IMenuContributor
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
-        }
-        else
-        {
-            administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
         }
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);

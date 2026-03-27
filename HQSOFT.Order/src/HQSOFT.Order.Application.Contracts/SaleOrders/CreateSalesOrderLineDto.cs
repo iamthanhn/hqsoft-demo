@@ -19,7 +19,7 @@ public class CreateSalesOrderLineDto
     [Range(1, int.MaxValue)]
     public int Quantity { get; set; }
 
-    [Range(typeof(decimal), "0.01", "999999999")]
+    [DecimalRange("0.01", "999999999")]
     public decimal UnitPriceAmount { get; set; }
 
     [Required]

@@ -79,6 +79,12 @@ public class SalesOrderAppService : OrderAppService, ISalesOrderAppService
     [Authorize(OrderPermissions.SalesOrders.Create)]
     public async Task<SalesOrderDto> CreateAsync(CreateSalesOrderDto input)
     {
+        if (input.Lines == null || !input.Lines.Any())
+        {
+            throw new BusinessException(OrderDomainErrorCodes.NoProductsInOrder)
+                .WithData("Message", "At least one product must be added to the order.");
+        }
+
         var order = await _salesOrderManager.CreateAsync(input.OrderDate);
 
         foreach (var line in input.Lines)
@@ -88,10 +94,19 @@ public class SalesOrderAppService : OrderAppService, ISalesOrderAppService
             {
                 var productCode = string.IsNullOrWhiteSpace(stock.ProductCode) ? line.ProductCode : stock.ProductCode;
                 throw new BusinessException(OrderDomainErrorCodes.InsufficientStock)
-                    .WithData("ProductCode", productCode);
+                    .WithData("ProductCode", productCode)
+                    .WithData("AvailableQuantity", stock.AvailableQuantity)
+                    .WithData("RequestedQuantity", line.Quantity);
             }
 
-            await _salesOrderManager.AddLineAsync(order, line.ProductId, line.ProductName, line.ProductCode, line.Quantity, line.UnitPriceAmount, line.Currency);
+            await _salesOrderManager.AddLineAsync(
+                order,
+                line.ProductId,
+                line.ProductName,
+                line.ProductCode,
+                line.Quantity,
+                line.UnitPriceAmount,
+                line.Currency);
         }
 
         await _salesOrderRepository.InsertAsync(order, autoSave: true);
@@ -109,6 +124,13 @@ public class SalesOrderAppService : OrderAppService, ISalesOrderAppService
         var order = await _salesOrderRepository.FindWithLinesAsync(id)
             ?? throw new EntityNotFoundException(typeof(SalesOrder), id);
 
+        if (order.Status != ESaleOrderStatus.Draft)
+        {
+            throw new BusinessException(OrderDomainErrorCodes.InvalidOrderStatus)
+                .WithData("CurrentStatus", order.Status.ToString())
+                .WithData("ExpectedStatus", ESaleOrderStatus.Draft.ToString());
+        }
+
         foreach (var line in order.OrderLines)
         {
             var stock = await _inventoryIntegrationService.CheckStockAsync(line.ProductId, line.Quantity);
@@ -116,14 +138,19 @@ public class SalesOrderAppService : OrderAppService, ISalesOrderAppService
             {
                 var productCode = string.IsNullOrWhiteSpace(stock.ProductCode) ? line.ProductCode : stock.ProductCode;
                 throw new BusinessException(OrderDomainErrorCodes.InsufficientStock)
-                    .WithData("ProductCode", productCode);
+                    .WithData("ProductCode", productCode)
+                    .WithData("AvailableQuantity", stock.AvailableQuantity)
+                    .WithData("RequestedQuantity", line.Quantity)
+                    .WithData("LineId", line.Id);
             }
 
-            var reserved = await _inventoryIntegrationService.ReserveStockAsync(line.ProductId, line.Quantity, $"SO:{order.Id}:{line.Id}");
+            var reserved = await _inventoryIntegrationService.ReserveStockAsync(
+                line.ProductId, line.Quantity, $"SO:{order.Id}:{line.Id}");
             if (!reserved)
             {
                 throw new BusinessException(OrderDomainErrorCodes.ReserveStockFailed)
-                    .WithData("ProductCode", line.ProductCode);
+                    .WithData("ProductCode", line.ProductCode)
+                    .WithData("LineId", line.Id);
             }
         }
 
@@ -150,8 +177,22 @@ public class SalesOrderAppService : OrderAppService, ISalesOrderAppService
         var order = await _salesOrderRepository.FindWithLinesAsync(id)
             ?? throw new EntityNotFoundException(typeof(SalesOrder), id);
 
+        if (order.Status != ESaleOrderStatus.Confirmed)
+        {
+            throw new BusinessException(OrderDomainErrorCodes.InvalidOrderStatus)
+                .WithData("CurrentStatus", order.Status.ToString())
+                .WithData("ExpectedStatus", ESaleOrderStatus.Confirmed.ToString());
+        }
+
+        foreach (var line in order.OrderLines)
+        {
+            await _inventoryIntegrationService.ReleaseStockAsync(
+                line.ProductId, line.Quantity, $"SO:{order.Id}:{line.Id}");
+        }
+
         await _salesOrderManager.CancelAsync(order);
         await _salesOrderRepository.UpdateAsync(order, autoSave: true);
+
         return ObjectMapper.Map<SalesOrder, SalesOrderDto>(order);
     }
 }

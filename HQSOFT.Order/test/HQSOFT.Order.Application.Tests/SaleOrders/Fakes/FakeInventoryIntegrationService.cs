@@ -10,6 +10,7 @@ public class FakeInventoryIntegrationService : IInventoryIntegrationService
     private readonly ConcurrentDictionary<Guid, StockState> _stocks = [];
 
     public ConcurrentBag<(Guid ProductId, int Quantity, string ReservationId)> ReserveCalls { get; } = [];
+    public ConcurrentBag<(Guid ProductId, int Quantity, string ReservationId)> ReleaseCalls { get; } = [];
 
     public void SetStock(Guid productId, bool isAvailable, int availableQuantity, string productCode, string productName, bool reserveResult)
     {
@@ -42,6 +43,12 @@ public class FakeInventoryIntegrationService : IInventoryIntegrationService
     {
         ReserveCalls.Add((productId, quantity, reservationId));
         return Task.FromResult(_stocks.TryGetValue(productId, out var stock) && stock.ReserveResult);
+    }
+
+    public Task<bool> ReleaseStockAsync(Guid productId, int quantity, string reservationId)
+    {
+        ReleaseCalls.Add((productId, quantity, reservationId));
+        return Task.FromResult(true); // Simulate successful release
     }
 
     private sealed record StockState(bool IsAvailable, int AvailableQuantity, string ProductCode, string ProductName, bool ReserveResult);

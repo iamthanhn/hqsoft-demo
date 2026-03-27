@@ -52,4 +52,19 @@ public class InventoryItem : FullAuditedAggregateRoot<Guid>
 
         ReservedQuantity += quantity;
     }
+
+    public void Release(int quantity, string reservationId)
+    {
+        if (quantity <= 0)
+        {
+            throw new ArgumentException("Release quantity must be positive", nameof(quantity));
+        }
+
+        if (ReservedQuantity < quantity)
+        {
+            throw new BusinessException(InventoryErrorCodes.InsufficientStock);
+        }
+
+        ReservedQuantity -= quantity;
+    }
 }
