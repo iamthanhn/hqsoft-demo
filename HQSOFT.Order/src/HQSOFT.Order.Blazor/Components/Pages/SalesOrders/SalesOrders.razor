@@ -1,0 +1,405 @@
+@page "/sales-orders"
+@using System.Collections
+@using HQSOFT.Order.Blazor.Components.Shared
+@using HQSOFT.Order.SaleOrders
+@using HQSOFT.Order.Localization
+@using HQSOFT.Order.Permissions
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@attribute [Authorize(OrderPermissions.SalesOrders.Default)]
+@inject ISalesOrderAppService SalesOrderAppService
+@inject IAuthorizationService AuthorizationService
+@inject IMessageService MessageService
+@inject IStringLocalizer<OrderResource> L
+
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="text-body mb-0">@L["SalesOrders"]</h5>
+            @if (CanCreate)
+            {
+                <Button Color="Color.Primary" Clicked="@ShowCreateModal">
+                    <Icon Name="IconName.Add" /> @L["SalesOrders:Create"]
+                </Button>
+            }
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                @if (!string.IsNullOrWhiteSpace(InlineMessage))
+                {
+                    <div class="alert @(InlineMessageIsError ? "alert-danger" : "alert-success") mb-3" role="alert">
+                        @InlineMessage
+                    </div>
+                }
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small">@L["SalesOrders:OrderNumber"]</label>
+                        <TextEdit @bind-Text="@Filter" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small">@L["SalesOrders:Status"]</label>
+                        <Select TValue="ESaleOrderStatus?" @bind-SelectedValue="@StatusFilter">
+                            <SelectItem Value="@((ESaleOrderStatus?)null)">@L["All"]</SelectItem>
+                            <SelectItem Value="@ESaleOrderStatus.Draft">@L["SalesOrders:Status:Draft"]</SelectItem>
+                            <SelectItem Value="@ESaleOrderStatus.Confirmed">@L["SalesOrders:Status:Confirmed"]</SelectItem>
+                            <SelectItem Value="@ESaleOrderStatus.Cancelled">@L["SalesOrders:Status:Cancelled"]</SelectItem>
+                        </Select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted small">@L["SalesOrders:OrderDate"] (From)</label>
+                        <DateEdit TValue="DateTime?" @bind-Date="@FromDate" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted small">@L["SalesOrders:OrderDate"] (To)</label>
+                        <DateEdit TValue="DateTime?" @bind-Date="@ToDate" />
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <Button Color="Color.Primary" Clicked="@OnSearch" Class="w-100">
+                            <Icon Name="IconName.Search" /> @L["Search"]
+                        </Button>
+                    </div>
+                </div>
+
+                <Table Hoverable Responsive>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell>@L["SalesOrders:OrderNumber"]</TableHeaderCell>
+                            <TableHeaderCell>@L["SalesOrders:OrderDate"]</TableHeaderCell>
+                            <TableHeaderCell>@L["SalesOrders:Status"]</TableHeaderCell>
+                            <TableHeaderCell>@L["SalesOrders:TotalAmount"]</TableHeaderCell>
+                            <TableHeaderCell Style="width:150px;"></TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @if (IsLoading && !Orders.Any())
+                        {
+                            <TableRow>
+                                <TableRowCell ColumnSpan="5" Class="text-center text-muted py-4">
+                                    @L["Loading"]...
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                        else if (!Orders.Any())
+                        {
+                            <TableRow>
+                                <TableRowCell ColumnSpan="5" Class="text-center text-muted py-4">
+                                    @L["NoDataFound"]
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                        else
+                        {
+                            @foreach (var order in Orders)
+                            {
+                                <TableRow>
+                                    <TableRowCell><strong>@order.OrderNumber</strong></TableRowCell>
+                                    <TableRowCell>@order.OrderDate.ToString("dd/MM/yyyy")</TableRowCell>
+                                    <TableRowCell>
+                                        <span class="so-badge @GetStatusClass(order.Status)">
+                                            @L[$"SalesOrders:Status:{order.Status}"]
+                                        </span>
+                                    </TableRowCell>
+                                    <TableRowCell class="so-amount">@order.TotalAmount.ToString("N0") @order.Currency</TableRowCell>
+                                    <TableRowCell>
+                                        <div class="d-flex gap-1 justify-content-end">
+                                            <Button Color="Color.Secondary" Size="Size.Small" Clicked="@(() => ShowDetailModal(order.Id))">
+                                                <Icon Name="IconName.Eye" />
+                                            </Button>
+                                            @if (order.Status == ESaleOrderStatus.Draft && CanConfirm)
+                                            {
+                                                <Button Color="Color.Success" Size="Size.Small" Clicked="@(() => ShowConfirmDialog(order.Id))">
+                                                    @L["SalesOrders:Confirm"]
+                                                </Button>
+                                            }
+                                            @if (order.Status == ESaleOrderStatus.Confirmed && CanCancel)
+                                            {
+                                                <Button Color="Color.Danger" Size="Size.Small" Clicked="@(() => ShowCancelDialog(order.Id))">
+                                                    @L["SalesOrders:Cancel"]
+                                                </Button>
+                                            }
+                                        </div>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        }
+                    </TableBody>
+                </Table>
+
+                @if (TotalCount > 0)
+                {
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="text-muted small">@L["Total"]: @TotalCount</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <Button Size="Size.Small" Clicked="@PrevPage" Disabled="@(CurrentPage <= 1)">
+                                <Icon Name="IconName.ChevronLeft" />
+                            </Button>
+                            <span class="small">@CurrentPage / @TotalPages</span>
+                            <Button Size="Size.Small" Clicked="@NextPage" Disabled="@(CurrentPage >= TotalPages)">
+                                <Icon Name="IconName.ChevronRight" />
+                            </Button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<CreateSalesOrderModal @ref="CreateModalRef" OnSave="@OnOrderCreated" />
+<SalesOrderDetailModal @ref="DetailModalRef" OnOrderChanged="@OnDataGridReadAsync" />
+<ConfirmationModal @ref="ConfirmationModalRef"
+                   Title="@ConfirmationTitle"
+                   Message="@ConfirmationMessage"
+                   ConfirmText="@L["Yes"]"
+                   CancelText="@L["No"]"
+                   OnConfirm="@OnConfirmAction" />
+
+@code {
+    private CreateSalesOrderModal CreateModalRef = null!;
+    private SalesOrderDetailModal DetailModalRef = null!;
+    private ConfirmationModal ConfirmationModalRef = null!;
+
+    private List<SalesOrderDto> Orders { get; set; } = new();
+    private int TotalCount { get; set; }
+    private bool IsLoading { get; set; }
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; } = 20;
+
+    private string Filter { get; set; } = string.Empty;
+    private ESaleOrderStatus? StatusFilter { get; set; }
+    private DateTime? FromDate { get; set; }
+    private DateTime? ToDate { get; set; }
+
+    private bool CanCreate { get; set; }
+    private bool CanConfirm { get; set; }
+    private bool CanCancel { get; set; }
+
+    private string ConfirmationTitle = string.Empty;
+    private string ConfirmationMessage = string.Empty;
+    private Func<Task>? PendingAction { get; set; }
+    private Guid PendingOrderId { get; set; }
+    private string? InlineMessage { get; set; }
+    private bool InlineMessageIsError { get; set; }
+
+    private int TotalPages => TotalCount == 0 ? 1 : (int)Math.Ceiling((double)TotalCount / PageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        CanCreate = (await AuthorizationService.AuthorizeAsync(OrderPermissions.SalesOrders.Create)).Succeeded;
+        CanConfirm = (await AuthorizationService.AuthorizeAsync(OrderPermissions.SalesOrders.Confirm)).Succeeded;
+        CanCancel = (await AuthorizationService.AuthorizeAsync(OrderPermissions.SalesOrders.Cancel)).Succeeded;
+        await OnDataGridReadAsync();
+    }
+
+    private async Task OnDataGridReadAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var input = new GetSalesOrdersInput
+            {
+                Filter = Filter,
+                Status = StatusFilter,
+                FromOrderDate = FromDate,
+                ToOrderDate = ToDate,
+                MaxResultCount = PageSize,
+                SkipCount = (CurrentPage - 1) * PageSize,
+                Sorting = nameof(SalesOrderDto.OrderDate) + " desc"
+            };
+            var result = await SalesOrderAppService.GetListAsync(input);
+            Orders = result.Items.ToList();
+            TotalCount = (int)result.TotalCount;
+            ClearInlineMessage();
+        }
+        catch (Exception ex)
+        {
+            await HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task OnSearch()
+    {
+        CurrentPage = 1;
+        await OnDataGridReadAsync();
+    }
+
+    private async Task PrevPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+            await OnDataGridReadAsync();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (CurrentPage < TotalPages)
+        {
+            CurrentPage++;
+            await OnDataGridReadAsync();
+        }
+    }
+
+    private string GetStatusClass(ESaleOrderStatus status) => status switch
+    {
+        ESaleOrderStatus.Draft => "so-badge-draft",
+        ESaleOrderStatus.Confirmed => "so-badge-confirmed",
+        ESaleOrderStatus.Cancelled => "so-badge-cancelled",
+        _ => "so-badge-draft"
+    };
+
+    private Task ShowCreateModal() => CreateModalRef.ShowAsync();
+
+    private async Task ShowDetailModal(Guid orderId) => await DetailModalRef.ShowAsync(orderId);
+
+    private async Task OnOrderCreated(CreateSalesOrderDto dto)
+    {
+        ClearInlineMessage();
+
+        try
+        {
+            await SalesOrderAppService.CreateAsync(dto);
+            await ShowSuccessAsync(L["SalesOrders:CreateSuccess"]);
+            await OnDataGridReadAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleExceptionAsync(ex);
+        }
+    }
+
+    private Task ShowConfirmDialog(Guid orderId)
+    {
+        PendingOrderId = orderId;
+        ConfirmationTitle = L["SalesOrders:Confirm"];
+        ConfirmationMessage = L["SalesOrders:ConfirmMessage"];
+        PendingAction = ConfirmOrderAsync;
+        return ConfirmationModalRef.ShowAsync();
+    }
+
+    private Task ShowCancelDialog(Guid orderId)
+    {
+        PendingOrderId = orderId;
+        ConfirmationTitle = L["SalesOrders:Cancel"];
+        ConfirmationMessage = L["SalesOrders:CancelMessage"];
+        PendingAction = CancelOrderAsync;
+        return ConfirmationModalRef.ShowAsync();
+    }
+
+    private async Task OnConfirmAction()
+    {
+        if (PendingAction == null)
+        {
+            return;
+        }
+
+        try
+        {
+            await PendingAction.Invoke();
+        }
+        catch (Exception ex)
+        {
+            await HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            PendingAction = null;
+        }
+    }
+
+    private async Task ConfirmOrderAsync()
+    {
+        await SalesOrderAppService.ConfirmAsync(PendingOrderId);
+        await ShowSuccessAsync(L["SalesOrders:ConfirmSuccess"]);
+        await OnDataGridReadAsync();
+    }
+
+    private async Task CancelOrderAsync()
+    {
+        await SalesOrderAppService.CancelAsync(PendingOrderId);
+        await ShowSuccessAsync(L["SalesOrders:CancelSuccess"]);
+        await OnDataGridReadAsync();
+    }
+
+    private async Task HandleExceptionAsync(Exception ex)
+    {
+        var message = ex is BusinessException businessException
+            ? FormatBusinessExceptionMessage(businessException)
+            : ex.Message;
+
+        SetInlineError(message);
+
+        try
+        {
+            await MessageService.Error(message);
+        }
+        catch
+        {
+            // fallback via inline alert only
+        }
+    }
+
+    private async Task ShowSuccessAsync(string message)
+    {
+        SetInlineSuccess(message);
+
+        try
+        {
+            await MessageService.Success(message);
+        }
+        catch
+        {
+            // fallback via inline alert only
+        }
+    }
+
+    private string FormatBusinessExceptionMessage(BusinessException businessException)
+    {
+        var template = !businessException.Code.IsNullOrWhiteSpace()
+            ? L[businessException.Code!].Value
+            : businessException.Message;
+
+        if (businessException.Data is not IDictionary data || data.Count == 0)
+        {
+            return template;
+        }
+
+        foreach (DictionaryEntry entry in data)
+        {
+            var key = entry.Key?.ToString();
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                continue;
+            }
+
+            template = template.Replace($"{{{key}}}", entry.Value?.ToString());
+        }
+
+        return template;
+    }
+
+    private void SetInlineError(string message)
+    {
+        InlineMessage = message;
+        InlineMessageIsError = true;
+    }
+
+    private void SetInlineSuccess(string message)
+    {
+        InlineMessage = message;
+        InlineMessageIsError = false;
+    }
+
+    private void ClearInlineMessage()
+    {
+        InlineMessage = null;
+        InlineMessageIsError = false;
+    }
+}

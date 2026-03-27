@@ -1,0 +1,210 @@
+@using HQSOFT.Order.Blazor.Components.Shared
+@using HQSOFT.Order.SaleOrders
+@using HQSOFT.Order.Localization
+@using HQSOFT.Order.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@inject ISalesOrderAppService SalesOrderAppService
+@inject IAuthorizationService AuthorizationService
+@inject IMessageService MessageService
+@inject IStringLocalizer<OrderResource> L
+
+<Modal @ref="ModalRef" Size="ModalSize.Large">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@L["SalesOrders:Detail"] — @Order?.OrderNumber</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Order != null)
+            {
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">@L["SalesOrders:OrderNumber"]</label>
+                        <div class="text-body fw-semibold">@Order.OrderNumber</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">@L["SalesOrders:OrderDate"]</label>
+                        <div class="text-body">@Order.OrderDate.ToString("dd/MM/yyyy")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">@L["SalesOrders:Status"]</label>
+                        <div>
+                            <span class="so-badge @GetStatusClass(Order.Status)">
+                                @L[$"SalesOrders:Status:{Order.Status}"]
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">@L["SalesOrders:TotalAmount"]</label>
+                        <div class="text-body so-amount">@Order.TotalAmount.ToString("N0") @Order.Currency</div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-body mb-0">@L["SalesOrders:OrderLines"]</h6>
+                    </div>
+
+                    <Table Hoverable Responsive>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHeaderCell>@L["SalesOrders:ProductCode"]</TableHeaderCell>
+                                <TableHeaderCell>@L["SalesOrders:ProductName"]</TableHeaderCell>
+                                <TableHeaderCell>@L["SalesOrders:Quantity"]</TableHeaderCell>
+                                <TableHeaderCell>@L["SalesOrders:UnitPrice"]</TableHeaderCell>
+                                <TableHeaderCell>@L["SalesOrders:LineTotal"]</TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var line in Order.OrderLines)
+                            {
+                                <TableRow>
+                                    <TableRowCell>@line.ProductCode</TableRowCell>
+                                    <TableRowCell>@line.ProductName</TableRowCell>
+                                    <TableRowCell>@line.Quantity</TableRowCell>
+                                    <TableRowCell class="so-amount">@line.UnitPriceAmount.ToString("N0")</TableRowCell>
+                                    <TableRowCell class="so-amount">@line.LineTotalAmount.ToString("N0")</TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TableRowCell ColumnSpan="4" Class="text-end fw-semibold">@L["SalesOrders:TotalAmount"]:</TableRowCell>
+                                <TableRowCell Class="fw-semibold so-amount">@Order.TotalAmount.ToString("N0") @Order.Currency</TableRowCell>
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </div>
+            }
+            else if (IsLoading)
+            {
+                <div class="text-center text-muted py-5">
+                    <Icon Name="IconName.Redo" Class="fs-1" />
+                    <p class="mt-2">@L["Loading"]...</p>
+                </div>
+            }
+        </ModalBody>
+        <ModalFooter>
+            @if (Order != null && Order.Status == ESaleOrderStatus.Draft && CanConfirm)
+            {
+                <Button Color="Color.Success" Clicked="@ShowConfirmDialog">@L["SalesOrders:Confirm"]</Button>
+            }
+            @if (Order != null && Order.Status == ESaleOrderStatus.Confirmed && CanCancel)
+            {
+                <Button Color="Color.Danger" Clicked="@ShowCancelDialog">@L["SalesOrders:Cancel"]</Button>
+            }
+            <Button Color="Color.Secondary" Clicked="@HideModal">@L["Close"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<ConfirmationModal @ref="ConfirmationModalRef"
+                   Title="@ConfirmationTitle"
+                   Message="@ConfirmationMessage"
+                   ConfirmText="@L["Yes"]"
+                   CancelText="@L["No"]"
+                   OnConfirm="@OnConfirmAction" />
+
+@code {
+    private Modal ModalRef = default!;
+    private ConfirmationModal ConfirmationModalRef = default!;
+    private SalesOrderDto? Order { get; set; }
+    private bool CanConfirm { get; set; }
+    private bool CanCancel { get; set; }
+    private bool IsLoading { get; set; }
+    private string ConfirmationTitle = string.Empty;
+    private string ConfirmationMessage = string.Empty;
+    private Func<Task>? PendingAction { get; set; }
+
+    [Parameter] public EventCallback OnOrderChanged { get; set; }
+
+    public async Task ShowAsync(Guid orderId)
+    {
+        IsLoading = true;
+        Order = null;
+
+        try
+        {
+            Order = await SalesOrderAppService.GetAsync(orderId);
+            CanConfirm = (await AuthorizationService.AuthorizeAsync(OrderPermissions.SalesOrders.Confirm)).Succeeded;
+            CanCancel = (await AuthorizationService.AuthorizeAsync(OrderPermissions.SalesOrders.Cancel)).Succeeded;
+            await ModalRef.Show();
+        }
+        catch (Exception ex)
+        {
+            await MessageService.Error(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private string GetStatusClass(ESaleOrderStatus status) => status switch
+    {
+        ESaleOrderStatus.Draft => "so-badge-draft",
+        ESaleOrderStatus.Confirmed => "so-badge-confirmed",
+        ESaleOrderStatus.Cancelled => "so-badge-cancelled",
+        _ => "so-badge-draft"
+    };
+
+    private Task ShowConfirmDialog()
+    {
+        ConfirmationTitle = L["SalesOrders:Confirm"];
+        ConfirmationMessage = L["SalesOrders:ConfirmMessage"];
+        PendingAction = ConfirmOrderAsync;
+        return ConfirmationModalRef.ShowAsync();
+    }
+
+    private Task ShowCancelDialog()
+    {
+        ConfirmationTitle = L["SalesOrders:Cancel"];
+        ConfirmationMessage = L["SalesOrders:CancelMessage"];
+        PendingAction = CancelOrderAsync;
+        return ConfirmationModalRef.ShowAsync();
+    }
+
+    private async Task OnConfirmAction()
+    {
+        if (PendingAction != null)
+        {
+            await PendingAction.Invoke();
+            PendingAction = null;
+        }
+    }
+
+    private async Task ConfirmOrderAsync()
+    {
+        if (Order == null) return;
+
+        try
+        {
+            Order = await SalesOrderAppService.ConfirmAsync(Order.Id);
+            await OnOrderChanged.InvokeAsync();
+            await MessageService.Success(L["SalesOrders:ConfirmSuccess"]);
+        }
+        catch (Exception ex)
+        {
+            await MessageService.Error(ex.Message);
+        }
+    }
+
+    private async Task CancelOrderAsync()
+    {
+        if (Order == null) return;
+
+        try
+        {
+            Order = await SalesOrderAppService.CancelAsync(Order.Id);
+            await OnOrderChanged.InvokeAsync();
+            await MessageService.Success(L["SalesOrders:CancelSuccess"]);
+        }
+        catch (Exception ex)
+        {
+            await MessageService.Error(ex.Message);
+        }
+    }
+
+    private async Task HideModal() => await ModalRef.Hide();
+}

@@ -1,0 +1,268 @@
+@using HQSOFT.Order.SaleOrders
+@using HQSOFT.Order.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<OrderResource> L
+@inject IMessageService MessageService
+
+<Modal @ref="ModalRef" Size="ModalSize.ExtraLarge" Scrollable>
+    <ModalContent Size="ModalSize.ExtraLarge" Style="min-width: 900px;">
+        <ModalHeader>
+            <ModalTitle>
+                <Icon Name="IconName.ShoppingCart" Class="me-2 text-primary" />
+                @L["SalesOrders:Create"]
+            </ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <div class="order-modal-body">
+                @* Header Section - Order Info *@
+                <div class="order-header-section">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">@L["SalesOrders:OrderDate"]</label>
+                            <DateEdit TValue="DateTime" @bind-Date="@OrderDate" Class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">@L["SalesOrders:Customer"]</label>
+                            <TextEdit @bind-Text="@CustomerName"
+                                     Placeholder="@L["SalesOrders:CustomerPlaceholder"]"
+                                     Class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">@L["SalesOrders:OrderNumber"]</label>
+                            <TextEdit @bind-Text="@OrderNumber"
+                                     Placeholder="Auto-generated"
+                                     Class="form-control"
+                                     ReadOnly />
+                        </div>
+                    </div>
+                </div>
+
+                @* Product Lines Section *@
+                <div class="order-lines-section">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">
+                            <Icon Name="IconName.List" Class="me-2" />
+                            @L["SalesOrders:ProductLines"]
+                        </h5>
+                        <Button Color="Color.Primary" Clicked="@ShowProductLookup" Class="px-3">
+                            <Icon Name="IconName.Apple" Class="me-1" />
+                            @L["SalesOrders:AddProduct"]
+                        </Button>
+                    </div>
+
+                    @if (OrderLines.Any())
+                    {
+                        <div class="table-responsive order-table-wrapper">
+                            <Table Bordered Hoverable Responsive Class="mb-0">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHeaderCell Class="col-num">#</TableHeaderCell>
+                                        <TableHeaderCell Class="col-code">@L["SalesOrders:ProductCode"]</TableHeaderCell>
+                                        <TableHeaderCell Class="col-name">@L["SalesOrders:ProductName"]</TableHeaderCell>
+                                        <TableHeaderCell Class="col-qty text-center">@L["SalesOrders:Quantity"]</TableHeaderCell>
+                                        <TableHeaderCell Class="col-price text-end">@L["SalesOrders:UnitPrice"]</TableHeaderCell>
+                                        <TableHeaderCell Class="col-total text-end">@L["SalesOrders:LineTotal"]</TableHeaderCell>
+                                        <TableHeaderCell Class="col-action"></TableHeaderCell>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    @{
+                                        int lineNum = 1;
+                                        foreach (var line in OrderLines)
+                                        {
+                                            <TableRow>
+                                                <TableRowCell Class="col-num text-muted">@lineNum</TableRowCell>
+                                                <TableRowCell Class="col-code">
+                                                    <Badge Color="Color.Secondary" Mode="BadgeMode.Start">@line.ProductCode</Badge>
+                                                </TableRowCell>
+                                                <TableRowCell Class="col-name fw-medium">@line.ProductName</TableRowCell>
+                                                <TableRowCell Class="col-qty">
+                                                    <NumericEdit TValue="int"
+                                                                 Value="@line.Quantity"
+                                                                 ValueChanged="@(v => UpdateLineQuantity(line, v))"
+                                                                 Min="1"
+                                                                 Class="form-control text-center" />
+                                                </TableRowCell>
+                                                <TableRowCell Class="col-price">
+                                                    <NumericEdit TValue="decimal"
+                                                                 Value="@line.UnitPrice"
+                                                                 ValueChanged="@(v => UpdateLineUnitPrice(line, v))"
+                                                                 Min="0.01m"
+                                                                 Class="form-control text-end" />
+                                                </TableRowCell>
+                                                <TableRowCell Class="col-total text-end fw-semibold so-amount">@line.LineTotal.ToString("N0")</TableRowCell>
+                                                <TableRowCell Class="col-action text-center">
+                                                    <Button Color="Color.Danger"
+                                                            Size="Size.Small"
+                                                            Clicked="@(() => RemoveLine(line))"
+                                                            Title="@L["Delete"]">
+                                                        <Icon Name="IconName.Delete" />
+                                                    </Button>
+                                                </TableRowCell>
+                                            </TableRow>
+                                            lineNum++;
+                                        }
+                                    }
+                                </TableBody>
+                            </Table>
+                        </div>
+
+                        @* Order Summary Footer *@
+                        <div class="order-summary-bar">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <span class="text-muted">
+                                        <Icon Name="IconName.Info" Class="me-1" />
+                                        @OrderLines.Count @L["SalesOrders:ItemsCount"]
+                                    </span>
+                                </div>
+                                <div class="col-6">
+                                    <div class="order-total-section">
+                                        <span class="order-total-label">@L["SalesOrders:TotalAmount"]:</span>
+                                        <span class="order-total-value">@TotalAmount.ToString("N0") <small>VND</small></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-lines-placeholder">
+                            <div class="empty-state">
+                                <Icon Name="IconName.Inbox" Class="empty-icon" />
+                                <h6>@L["SalesOrders:NoProductsAdded"]</h6>
+                                <p class="text-muted mb-0">Click "Add Product" to begin adding items to this order.</p>
+                                <Button Color="Color.Primary" Clicked="@ShowProductLookup" Class="mt-3">
+                                    <Icon Name="IconName.Apple" Class="me-1" />
+                                    @L["SalesOrders:AddProduct"]
+                                </Button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal" Class="px-4">
+                @L["Cancel"]
+            </Button>
+            <Button Color="Color.Primary" Clicked="@SaveAsync" Class="px-4" Disabled="@(!OrderLines.Any())">
+                <Icon Name="IconName.Save" Class="me-1" />
+                @L["Save"]
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<ProductLookupModal @ref="ProductLookupModalRef" OnProductSelected="@OnProductSelected" />
+
+@code {
+    private Modal ModalRef = null!;
+    private ProductLookupModal ProductLookupModalRef = null!;
+
+    private DateTime OrderDate { get; set; } = DateTime.Now;
+    private string CustomerName { get; set; } = string.Empty;
+    private string OrderNumber { get; set; } = string.Empty;
+    private List<OrderLineItem> OrderLines { get; set; } = new();
+    private decimal TotalAmount => OrderLines.Sum(x => x.LineTotal);
+
+    [Parameter] public EventCallback<CreateSalesOrderDto> OnSave { get; set; }
+
+    public Task ShowAsync()
+    {
+        OrderDate = DateTime.Now;
+        CustomerName = string.Empty;
+        OrderNumber = GenerateOrderNumber();
+        OrderLines.Clear();
+        return ModalRef.Show();
+    }
+
+    private string GenerateOrderNumber()
+    {
+        return $"SO-{DateTime.Now:yyyyMMdd}-{new Random().Next(1000, 9999)}";
+    }
+
+    private Task ShowProductLookup() => ProductLookupModalRef.Show();
+
+    private void OnProductSelected(ProductLookupModal.ProductSelectionResult result)
+    {
+        var existing = OrderLines.FirstOrDefault(x => x.ProductId == result.ProductId);
+        if (existing != null)
+        {
+            existing.Quantity += result.Quantity;
+            existing.LineTotal = existing.Quantity * existing.UnitPrice;
+        }
+        else
+        {
+            OrderLines.Add(new OrderLineItem
+            {
+                ProductId = result.ProductId,
+                ProductCode = result.ProductCode,
+                ProductName = result.ProductName,
+                Quantity = result.Quantity,
+                UnitPrice = result.UnitPrice,
+                LineTotal = result.Quantity * result.UnitPrice
+            });
+        }
+        StateHasChanged();
+    }
+
+    private void UpdateLineQuantity(OrderLineItem line, int quantity)
+    {
+        line.Quantity = quantity;
+        line.LineTotal = line.Quantity * line.UnitPrice;
+        StateHasChanged();
+    }
+
+    private void UpdateLineUnitPrice(OrderLineItem line, decimal unitPrice)
+    {
+        line.UnitPrice = unitPrice;
+        line.LineTotal = line.Quantity * line.UnitPrice;
+        StateHasChanged();
+    }
+
+    private void RemoveLine(OrderLineItem line)
+    {
+        OrderLines.Remove(line);
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+        if (!OrderLines.Any())
+        {
+            await MessageService.Warning(L["SalesOrders:NoProductsAdded"]);
+            return;
+        }
+
+        var dto = new CreateSalesOrderDto
+        {
+            OrderDate = OrderDate,
+            Lines = OrderLines.Select(x => new CreateSalesOrderLineDto
+            {
+                ProductId = x.ProductId,
+                ProductCode = x.ProductCode,
+                ProductName = x.ProductName,
+                Quantity = x.Quantity,
+                UnitPriceAmount = x.UnitPrice,
+                Currency = "VND"
+            }).ToList()
+        };
+
+        await OnSave.InvokeAsync(dto);
+        await ModalRef.Hide();
+    }
+
+    private async Task HideModal() => await ModalRef.Hide();
+
+    private class OrderLineItem
+    {
+        public Guid ProductId { get; set; }
+        public string ProductCode { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal LineTotal { get; set; }
+    }
+}

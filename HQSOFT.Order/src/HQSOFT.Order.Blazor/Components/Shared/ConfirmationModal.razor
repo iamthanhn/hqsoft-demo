@@ -1,0 +1,48 @@
+@using Blazorise
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered Size="ModalSize.Default">
+        <ModalHeader>
+            <ModalTitle>@Title</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <p class="mb-0 text-body">@Message</p>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">@CancelText</Button>
+            <Button Color="Color.Primary" Clicked="@OnConfirmClicked">@ConfirmText</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+    private Modal ModalRef { get; set; } = default!;
+
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public string ConfirmText { get; set; } = "Yes";
+    [Parameter] public string CancelText { get; set; } = "No";
+    [Parameter] public EventCallback OnConfirm { get; set; }
+
+    public Task ShowAsync()
+    {
+        return ModalRef.Show();
+    }
+
+    public Task HideAsync()
+    {
+        return ModalRef.Hide();
+    }
+
+    private async Task HideModal()
+    {
+        await ModalRef.Hide();
+    }
+
+    private async Task OnConfirmClicked()
+    {
+        await ModalRef.Hide();
+        await OnConfirm.InvokeAsync();
+    }
+}

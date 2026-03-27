@@ -1,0 +1,273 @@
+@using Blazorise
+@using HQSOFT.Inventory.InventoryItems
+@using HQSOFT.Order.Localization
+@using Microsoft.Extensions.Localization
+@inject IInventoryItemAppService InventoryItemAppService
+@inject IStringLocalizer<OrderResource> L
+
+<Modal @ref="ModalRef" Size="ModalSize.Large" Scrollable>
+    <ModalContent Size="ModalSize.Large" Style="min-width: 800px; max-width: 900px;">
+        <ModalHeader>
+            <ModalTitle>
+                <Icon Name="IconName.Search" Class="me-2 text-primary" />
+                @L["SalesOrders:AddProduct"]
+            </ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <div class="product-lookup-body">
+                @* Search Bar *@
+                <div class="product-search-bar mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <Icon Name="IconName.Search" />
+                        </span>
+                        <TextEdit @bind-Text="@SearchFilter"
+                                 Placeholder="@($"{L["SalesOrders:ProductCode"]} / {L["SalesOrders:ProductName"]}")"
+                                 @onkeyup="@(async (e) => { if (e.Key == "Enter") await SearchAsync(); })"
+                                 Class="form-control" />
+                        @if (!string.IsNullOrEmpty(SearchFilter))
+                        {
+                            <Button Color="Color.Secondary"
+                                    Size="Size.Small"
+                                    Clicked="@(() => { SearchFilter = string.Empty;  SearchAsync().GetAwaiter().GetResult(); })">
+                                <Icon Name="IconName.Clear" />
+                            </Button>
+                        }
+                        <Button Color="Color.Primary" Clicked="@SearchAsync">
+                            @L["Search"]
+                        </Button>
+                    </div>
+                </div>
+
+                @* Product Data Grid *@
+                <div class="product-grid-wrapper">
+                    <DataGrid TItem="InventoryItemDto"
+                              Data="@Products"
+                              ReadData="@OnDataGridReadAsync"
+                              TotalItems="@TotalCount"
+                              ShowPager="true"
+                              PageSize="8"
+                              Responsive
+                              SelectedRowChanged="@OnSelectedRowChanged"
+                              RowClicked="@OnRowClicked"
+                              ClickableRow>
+                        <DataGridColumns>
+                            <DataGridColumn Field="@nameof(InventoryItemDto.ProductCode)" Caption="@L["SalesOrders:ProductCode"]" Width="20%">
+                                <CaptionTemplate>
+                                    <span class="fw-semibold">@L["SalesOrders:ProductCode"]</span>
+                                </CaptionTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn Field="@nameof(InventoryItemDto.ProductName)" Caption="@L["SalesOrders:ProductName"]" Width="40%" />
+                            <DataGridColumn Field="@nameof(InventoryItemDto.AvailableQuantity)" Caption="@L["SalesOrders:AvailableQuantity"]" Width="20%">
+                                <DisplayTemplate>
+                                    @if (context.AvailableQuantity > 0)
+                                    {
+                                        <Badge Color="Color.Success" Mode="BadgeMode.Round">@context.AvailableQuantity</Badge>
+                                    }
+                                    else
+                                    {
+                                        <Badge Color="Color.Secondary" Mode="BadgeMode.Round">@context.AvailableQuantity</Badge>
+                                    }
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn Width="20%" TextAlignment="TextAlignment.Center">
+                                <CaptionTemplate>
+                                    <span class="fw-semibold">@L["SalesOrders:Actions"]</span>
+                                </CaptionTemplate>
+                                <DisplayTemplate>
+                                    <Button Color="Color.Primary"
+                                            Size="Size.Small"
+                                            Clicked="@(() => SelectProduct(context))"
+                                            Title="@L["SalesOrders:Select"]">
+                                        <Icon Name="IconName.Add" Class="me-1" /> @L["SalesOrders:Select"]
+                                    </Button>
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                        </DataGridColumns>
+                        <EmptyTemplate>
+                            <div class="text-center text-muted py-5">
+                                <Icon Name="IconName.Search" Class="fs-1 text-muted mb-2" />
+                                <p class="mb-0">@L["SalesOrders:NoProductsFound"]</p>
+                            </div>
+                        </EmptyTemplate>
+                        <LoadingTemplate>
+                            <div class="text-center py-5">
+                                <Icon Name="IconName.Subway" Class="fs-1 text-primary" />
+                            </div>
+                        </LoadingTemplate>
+                    </DataGrid>
+                </div>
+
+                @* Selected Product Panel *@
+                @if (SelectedProduct != null)
+                {
+                    <div class="selected-product-panel mt-3">
+                        <div class="panel-header">
+                            <h6 class="mb-0">
+                                <Icon Name="IconName.CheckCircle" Class="me-2 text-success" />
+                                @L["SalesOrders:SelectedProduct"]
+                            </h6>
+                            <Button Color="Color.Link"
+                                    Size="Size.Small"
+                                    Clicked="@ClearSelection"
+                                    Class="text-muted p-0">
+                                <Icon Name="IconName.Clear" /> @L["SalesOrders:ClearSelection"]
+                            </Button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row g-3">
+                                <div class="col-md-5">
+                                    <div class="selected-product-info">
+                                        <div class="product-badge mb-2">
+                                            <Badge Color="Color.Primary" Mode="BadgeMode.Start">@SelectedProduct.ProductCode</Badge>
+                                        </div>
+                                        <h5 class="mb-1">@SelectedProduct.ProductName</h5>
+                                        <div class="text-muted small">
+                                            <Icon Name="IconName.Inbox" Class="me-1" />
+                                            @L["SalesOrders:AvailableQuantity"]: @SelectedProduct.AvailableQuantity
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold">@L["SalesOrders:Quantity"]</label>
+                                    <NumericEdit @bind-Value="@Quantity"
+                                                 Min="1"
+                                                 Max="@SelectedProduct.AvailableQuantity"
+                                                 Class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">@L["SalesOrders:UnitPrice"]</label>
+                                    <NumericEdit @bind-Value="@UnitPrice"
+                                                 Min="0.01m"
+                                                 Step="1000"
+                                                 Class="form-control" />
+                                </div>
+                            </div>
+                            <div class="panel-footer mt-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="line-preview">
+                                        <span class="text-muted small">@L["SalesOrders:LineTotal"]:</span>
+                                        <span class="fw-bold fs-5 ms-2">@((Quantity * UnitPrice).ToString("N0")) VND</span>
+                                    </div>
+                                    <Button Color="Color.Success"
+                                            Clicked="@ConfirmSelection"
+                                            Class="px-4">
+                                        <Icon Name="IconName.ShoppingCart" Class="me-1" />
+                                        @L["SalesOrders:AddToOrder"]
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal" Class="px-4">
+                @L["Cancel"]
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+    private Modal ModalRef = default!;
+    private List<InventoryItemDto> Products = new();
+    private int TotalCount;
+    private string SearchFilter = string.Empty;
+    private InventoryItemDto? SelectedProduct { get; set; }
+    private int Quantity { get; set; } = 1;
+    private decimal UnitPrice { get; set; } = 0;
+
+    [Parameter] public EventCallback<ProductSelectionResult> OnProductSelected { get; set; }
+
+    public async Task Show()
+    {
+        SearchFilter = string.Empty;
+        SelectedProduct = null;
+        Quantity = 1;
+        UnitPrice = 0;
+        await SearchAsync();
+        await ModalRef.Show();
+    }
+
+    private async Task SearchAsync()
+    {
+        var input = new GetInventoryItemListDto
+        {
+            Filter = SearchFilter,
+            MaxResultCount = 8,
+            SkipCount = 0
+        };
+        var result = await InventoryItemAppService.GetListAsync(input);
+        Products = result.Items.ToList();
+        TotalCount = (int)result.TotalCount;
+    }
+
+    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<InventoryItemDto> e)
+    {
+        var input = new GetInventoryItemListDto
+        {
+            Filter = SearchFilter,
+            MaxResultCount = e.PageSize,
+            SkipCount = (e.Page - 1) * e.PageSize
+        };
+        var result = await InventoryItemAppService.GetListAsync(input);
+        Products = result.Items.ToList();
+        TotalCount = (int)result.TotalCount;
+    }
+
+    private void OnSelectedRowChanged(InventoryItemDto product)
+    {
+        SelectProduct(product);
+    }
+
+    private void OnRowClicked(DataGridRowMouseEventArgs<InventoryItemDto> eventArgs)
+    {
+        if (eventArgs.Item != null)
+        {
+            SelectProduct(eventArgs.Item);
+        }
+    }
+
+    private void SelectProduct(InventoryItemDto product)
+    {
+        SelectedProduct = product;
+        Quantity = 1;
+        UnitPrice = 0;
+        StateHasChanged();
+    }
+
+    private void ClearSelection()
+    {
+        SelectedProduct = null;
+        StateHasChanged();
+    }
+
+    private async Task ConfirmSelection()
+    {
+        if (SelectedProduct == null) return;
+        var result = new ProductSelectionResult
+        {
+            ProductId = SelectedProduct.ProductId,
+            ProductCode = SelectedProduct.ProductCode,
+            ProductName = SelectedProduct.ProductName,
+            Quantity = Quantity,
+            UnitPrice = UnitPrice
+        };
+        await OnProductSelected.InvokeAsync(result);
+        await ModalRef.Hide();
+    }
+
+    private async Task HideModal() => await ModalRef.Hide();
+
+    public class ProductSelectionResult
+    {
+        public Guid ProductId { get; set; }
+        public string ProductCode = string.Empty;
+        public string ProductName = string.Empty;
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+    }
+}
